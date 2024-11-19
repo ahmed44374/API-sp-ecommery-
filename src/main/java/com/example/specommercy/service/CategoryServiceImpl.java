@@ -1,5 +1,6 @@
 package com.example.specommercy.service;
 
+import com.example.specommercy.exception.ResourceNotFoundException;
 import com.example.specommercy.model.Category;
 import com.example.specommercy.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +35,14 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public String deleteCategory(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"category not found") );
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category","CategoryId",categoryId) );
         categoryRepository.deleteById(categoryId);
         return "category deleted successfully";
     }
 
     @Override
     public Category updateCategory(Long categoryId, Category category) {
-        Category tempCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"category not found") );;
+        Category tempCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("category", "CategoryId", categoryId) );;
         tempCategory.setCategoryName(category.getCategoryName());
         return categoryRepository.save(tempCategory);
     }

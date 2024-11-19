@@ -2,6 +2,7 @@ package com.example.specommercy.controller;
 
 import com.example.specommercy.model.Category;
 import com.example.specommercy.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class categoryController {
     }
 
     @PostMapping("/public/categories")
-    public ResponseEntity<String> addCategory(@RequestBody Category category) {
+    public ResponseEntity<String> addCategory(@Valid @RequestBody Category category) {
         categoryService.addCategory(category);
         return new ResponseEntity<>("category added successfully",HttpStatus.CREATED) ;
     }
