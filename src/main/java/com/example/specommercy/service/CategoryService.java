@@ -9,6 +9,6 @@ import java.util.List;
 public interface CategoryService {
      CategoryDTO addCategory(CategoryDTO categoryDTO);
     CategoryResponse getAllCategories();
-     String deleteCategory(Long categoryId);
+     CategoryDTO deleteCategory(Long categoryId);
      CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO);
 }
