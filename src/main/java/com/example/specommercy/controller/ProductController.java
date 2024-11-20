@@ -2,7 +2,6 @@ package com.example.specommercy.controller;
 
 import com.example.specommercy.payload.ProductDTO;
 import com.example.specommercy.payload.ProductResponse;
-import com.example.specommercy.repository.ProductRepository;
 import com.example.specommercy.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,5 +30,30 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getAllProducts() {
         ProductResponse productResponse = productService.getAllProducts();
         return new ResponseEntity<>(productResponse,HttpStatus.OK);
+    }
+
+    @GetMapping("/public/categories/{categoryId}/products")
+    public ResponseEntity<ProductResponse> getProductsByCategory(@PathVariable Long categoryId) {
+       ProductResponse productResponse = productService.searchByCategory(categoryId);
+       return new ResponseEntity<>(productResponse,HttpStatus.OK);
+    }
+
+    @GetMapping("/public/products/keyword/{keyword}")
+    public ResponseEntity<ProductResponse> getProductsByKeyword(@PathVariable String keyword) {
+        ProductResponse productResponse = productService.searchProductByKeyword(keyword);
+        return new ResponseEntity<>(productResponse,HttpStatus.FOUND);
+    }
+
+    @PutMapping("/admin/products/{productId}")
+    public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO productDTO,
+            @PathVariable Long productId) {
+        ProductDTO savedProductDto = productService.updateProduct(productId,productDTO);
+        return new ResponseEntity<>(savedProductDto,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/admin/products/{productId}")
+    public ResponseEntity<ProductDTO> deleteProduct(@PathVariable Long productId) {
+        ProductDTO deletedProduct = productService.deleteProduct(productId);
+        return new ResponseEntity<>(deletedProduct,HttpStatus.OK);
     }
 }
