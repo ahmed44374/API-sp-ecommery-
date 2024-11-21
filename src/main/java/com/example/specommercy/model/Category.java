@@ -1,14 +1,13 @@
 package com.example.specommercy.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -23,4 +22,7 @@ public class Category {
     @Size(min = 5, message = "category name must contain at least 5 characters")
 
     private String categoryName;
+
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 }
