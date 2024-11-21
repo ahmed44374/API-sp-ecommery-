@@ -60,7 +60,6 @@ public class CategoryServiceImpl implements CategoryService{
         return categoryResponse;
     }
 
-
     @Override
     public CategoryDTO deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category","CategoryId",categoryId) );
