@@ -1,7 +1,6 @@
 package com.example.specommercy.controller;
 
 import com.example.specommercy.payload.CartDTO;
-import com.example.specommercy.repository.CartRepository;
 import com.example.specommercy.service.CartService;
 import com.example.specommercy.util.AuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
