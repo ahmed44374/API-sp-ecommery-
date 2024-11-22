@@ -14,7 +14,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "app_user",
+@Table(name = "users",
         uniqueConstraints = {
         @UniqueConstraint(columnNames = "u sername"),
         @UniqueConstraint(columnNames = "email")
