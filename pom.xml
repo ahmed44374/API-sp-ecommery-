@@ -81,6 +81,12 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- stripe payment gateway		-->
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>21.1.0</version>
+		</dependency>
 		<!-- ModelMapper for Object Mapping -->
 		<dependency>
 			<groupId>org.modelmapper</groupId>

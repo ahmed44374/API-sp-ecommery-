@@ -30,9 +30,8 @@ public class AuthUtil {
 
     public User loggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(authentication.getName())
+        return userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
-        return user;
     }
 
     public Long loggedInUserId() {
