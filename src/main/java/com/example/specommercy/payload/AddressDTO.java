@@ -1,6 +1,10 @@
-package com.example.specommercy.model;
+package com.example.specommercy.payload;
 
-import jakarta.persistence.*;
+import com.example.specommercy.model.User;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -10,15 +14,11 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Address {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class AddressDTO {
     private Long addressId;
-
     @NotBlank
     @Size(min = 5, message = "street name must be at least 5 characters")
     private String street;
@@ -38,16 +38,4 @@ public class Address {
 
     @Size(min = 3, message = "zipcode name must be at least 3 characters")
     private String zipcode;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    private User user ;
-
-    public Address(String street, String buildingName, String city, String state, String country, String zipcode) {
-        this.street = street;
-        this.buildingName = buildingName;
-        this.city = city;
-        this.state = state;
-        this.country = country;
-        this.zipcode = zipcode;
-    }
 }
