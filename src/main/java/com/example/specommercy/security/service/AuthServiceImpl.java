@@ -81,23 +81,6 @@ public class AuthServiceImpl implements AuthService{
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-        System.out.println("lol");
-
         if (strRoles == null) {
             Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
