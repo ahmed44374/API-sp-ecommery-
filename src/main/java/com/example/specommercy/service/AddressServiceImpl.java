@@ -1,6 +1,7 @@
 package com.example.specommercy.service;
 
 import com.example.specommercy.exception.APIException;
+import com.example.specommercy.exception.ResourceNotFoundException;
 import com.example.specommercy.model.Address;
 import com.example.specommercy.model.User;
 import com.example.specommercy.payload.AddressDTO;
@@ -47,6 +48,28 @@ public class AddressServiceImpl implements AddressService{
     }
 
     @Override
+    public AddressDTO updateAddress(Long addressId, AddressDTO addressDTO) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("address","addressId",addressId));
+        address.setCity(addressDTO.getCity());
+        address.setState(addressDTO.getState());
+        address.setCountry(addressDTO.getCountry());
+        address.setBuildingName(addressDTO.getBuildingName());
+        address.setStreet(addressDTO.getStreet());
+        address.setZipcode(addressDTO.getZipcode());
+        return modelMapper.map(addressRepository.save(address),AddressDTO.class);
+    }
+
+    @Override
+    public AddressDTO deleteAddress(Long addressId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("address","addressId",addressId));
+        AddressDTO addressDTO = modelMapper.map(address,AddressDTO.class);
+        addressRepository.delete(address);
+        return addressDTO;
+    }
+
+    @Override
     public List<AddressDTO> getAllAddresses() {
         List<Address> addresses = addressRepository.findAll();
         if(addresses.isEmpty())
@@ -55,4 +78,6 @@ public class AddressServiceImpl implements AddressService{
                 .map(address -> modelMapper.map(address,AddressDTO.class))
                 .toList();
     }
+
+
 }
