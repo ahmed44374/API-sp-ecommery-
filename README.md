@@ -35,6 +35,16 @@
 - Jakson
 
 
+## API Reference
+
+#### Swagger-UI
+
+```http
+  GET http://localhost:8081/swagger-ui/index.html
+```
+
+
+
 ## API Documentation (Swagger UI)
 Below is a screenshot of the Swagger UI showcasing the API endpoints:
 
@@ -48,3 +58,14 @@ Below is a screenshot of the Swagger UI showcasing the API endpoints:
 The Entity-Relationship (ER) Diagram for the database is shown below:
 
 ![ER Diagram](images/ApplicationERdigram.png)
+
+## Future Enhancements
+- Add email notifications
+- Implement search functionality
+- Improve test coverage
+
+## Contributors
+- [Ahmed Ehab](https://github.com/ahmed44374)
+
+
+
