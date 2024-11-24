@@ -3,6 +3,7 @@ import com.example.specommercy.payload.OrderDTO;
 import com.example.specommercy.payload.OrderRequestDTO;
 import com.example.specommercy.service.OrderService;
 import com.example.specommercy.util.AuthUtil;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class OrderController {
     }
 
     @PostMapping("/order/users/payments/{paymentMethod}")
-    public ResponseEntity<OrderDTO> orderProducts(@PathVariable String paymentMethod, @RequestBody OrderRequestDTO orderRequestDTO) {
+    public ResponseEntity<OrderDTO> orderProducts(@PathVariable String paymentMethod, @RequestBody OrderRequestDTO orderRequestDTO) throws StripeException {
         String emailId = authUtil.loggedInEmail();
         OrderDTO order = orderService.placeOrder(
                 emailId,

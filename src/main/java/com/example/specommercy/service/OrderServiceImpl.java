@@ -5,7 +5,10 @@ import com.example.specommercy.exception.ResourceNotFoundException;
 import com.example.specommercy.model.*;
 import com.example.specommercy.payload.OrderDTO;
 import com.example.specommercy.payload.OrderItemDTO;
+import com.example.specommercy.payload.PaymentInfoRequest;
+import com.example.specommercy.payload.PaymentInfoResponse;
 import com.example.specommercy.repository.*;
+import com.stripe.exception.StripeException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,41 +19,37 @@ import java.util.ArrayList;
 import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService{
-    @Autowired
-    CartRepository cartRepository;
+    private final CartRepository cartRepository;
+    private final AddressRepository addressRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
+    private final CartService cartService;
+    private final ModelMapper modelMapper;
+    private final ProductRepository productRepository;
+    private final PaymentService paymentService;
 
     @Autowired
-    AddressRepository addressRepository;
+    public OrderServiceImpl(CartRepository cartRepository, AddressRepository addressRepository, OrderItemRepository orderItemRepository, OrderRepository orderRepository, PaymentRepository paymentRepository, CartService cartService, ModelMapper modelMapper, ProductRepository productRepository, PaymentService paymentService) {
+        this.cartRepository = cartRepository;
+        this.addressRepository = addressRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.orderRepository = orderRepository;
+        this.paymentRepository = paymentRepository;
+        this.cartService = cartService;
+        this.modelMapper = modelMapper;
+        this.productRepository = productRepository;
+        this.paymentService = paymentService;
+    }
 
-    @Autowired
-    OrderItemRepository orderItemRepository;
-
-    @Autowired
-    OrderRepository orderRepository;
-
-    @Autowired
-    PaymentRepository paymentRepository;
-
-    @Autowired
-    CartService cartService;
-
-    @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
-    ProductRepository productRepository;
-
-    @Autowired
-    CartItemRepository cartItemRepository;
     @Override
     @Transactional
-    public OrderDTO placeOrder(String emailId, Long addressId, String paymentMethod, String pgName, String pgPaymentId, String pgStatus, String pgResponseMessage) {
+    public OrderDTO placeOrder(String emailId, Long addressId, String paymentMethod, String pgName, String pgPaymentId, String pgStatus, String pgResponseMessage) throws StripeException {
         Cart cart = cartRepository.findCartByEmail(emailId);
         if (cart == null) {
             throw new ResourceNotFoundException("Cart", "email", emailId);
         }
 
-        System.out.println("fuckkkkkk");
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
 
@@ -61,15 +60,23 @@ public class OrderServiceImpl implements OrderService{
         order.setOrderStatus("Order Accepted !");
         order.setAddress(address);
 
-        System.out.println("lollll");
-        Payment payment = new Payment(paymentMethod, pgPaymentId, pgStatus, pgResponseMessage, pgName);
+        List<CartItem> cartItems = cart.getCartItems();
+        List<PaymentInfoRequest> paymentInfoRequests = cartItems.stream()
+                .map(item -> {
+                    PaymentInfoRequest paymentInfoRequest = new PaymentInfoRequest();
+                    paymentInfoRequest.setQuantity((long)item.getQuantity());
+                    paymentInfoRequest.setCurrency("usd");
+                    paymentInfoRequest.setName(item.getProduct().getProductName());
+                    paymentInfoRequest.setAmount(item.getProductPrice());
+                    return paymentInfoRequest;
+                }).toList();
+        PaymentInfoResponse paymentInfoResponse = paymentService.checkoutProducts(paymentInfoRequests);
+        Payment payment = new Payment(paymentInfoResponse.getPgMethod(), paymentInfoResponse.getSessionId(), paymentInfoResponse.getStatus(), paymentInfoResponse.getResponseMessage(), paymentInfoResponse.getPgName());
         payment.setOrder(order);
         payment = paymentRepository.save(payment);
         order.setPayment(payment);
 
         Order savedOrder = orderRepository.save(order);
-
-        List<CartItem> cartItems = cart.getCartItems();
         if (cartItems.isEmpty()) {
             throw new APIException("Cart is empty");
         }
@@ -87,7 +94,6 @@ public class OrderServiceImpl implements OrderService{
 
         orderItems = orderItemRepository.saveAll(orderItems);
 
-        System.out.println("hereee");
         cart.getCartItems().forEach(item -> {
             int quantity = item.getQuantity();
             Product product = item.getProduct();
@@ -99,17 +105,14 @@ public class OrderServiceImpl implements OrderService{
             productRepository.save(product);
 
             // Remove items from cart
-            System.out.println("a7aaa");
-            System.out.println(cart.getCartId() + ' ' + item.getProduct().getProductId());
-            cartItemRepository.deleteCartItemByProductIdAndCartId(cart.getCartId(), item.getProduct().getProductId());
-            System.out.println("manga");
+            cartService.deleteProductFromCart(cart.getCartId(), item.getProduct().getProductId());
         });
 
         OrderDTO orderDTO = modelMapper.map(savedOrder, OrderDTO.class);
         orderItems.forEach(item -> orderDTO.getOrderItems().add(modelMapper.map(item, OrderItemDTO.class)));
 
         orderDTO.setAddressId(addressId);
-
+        orderDTO.setSessionUrl(paymentInfoResponse.getSessionUrl());
         return orderDTO;
     }
 }

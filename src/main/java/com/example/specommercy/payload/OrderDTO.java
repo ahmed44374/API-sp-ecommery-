@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,4 +20,5 @@ public class OrderDTO {
     private Double totalAmount;
     private String orderStatus;
     private Long addressId;
+    private String SessionUrl;
 }
